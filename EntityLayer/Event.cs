@@ -1,4 +1,6 @@
-namespace InformaEventsAPI.Core.Models
+using System;
+
+namespace InformaEventsAPI.Core.EntityLayer
 {
     public class Event
     {
@@ -7,5 +9,9 @@ namespace InformaEventsAPI.Core.Models
         public string MainCategory { get; set; }
         public string ShortDescription { get; set; }
         public string LongDescription { get; set; }
+        public DateTime StartDate { get; set; }
+        public int Duration { get; set; }
+        public string City { get; set; }
+        public string Venue { get; set; }
     }
 }
