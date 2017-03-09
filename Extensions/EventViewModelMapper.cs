@@ -8,7 +8,7 @@ namespace InformaEventsAPI.Extensions
         {
             return entity == null ? null : new EventViewModel
             {
-                ID = entity.ID,
+                Id = entity.Id,
                 EventName = entity.Title,
                 ShortDescription = entity.ShortDescription,
                 Overview = entity.LongDescription,

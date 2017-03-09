@@ -4,7 +4,7 @@ namespace InformaEventsAPI.Core.EntityLayer
 {
     public class Event
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string Title { get; set; }
         public string MainCategory { get; set; }
         public string ShortDescription { get; set; }

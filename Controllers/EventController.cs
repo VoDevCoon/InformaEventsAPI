@@ -7,6 +7,7 @@ using InformaEventsAPI.ViewModels;
 using System.Linq;
 using InformaEventsAPI.Extensions;
 using Microsoft.EntityFrameworkCore;
+using InformaEventsAPI.Core.EntityLayer;
 
 namespace InformaEventsAPI.Controllers
 {
@@ -19,10 +20,22 @@ namespace InformaEventsAPI.Controllers
             _repository = repository;
         }
 
-        protected override void Dispose(bool disposing)
+        // protected override void Dispose(bool disposing)
+        // {
+        //     _repository.Dispose();
+        //     base.Dispose();
+        // }
+
+        [HttpGetAttribute]
+        [RouteAttribute("Test/{id}")]
+        public IActionResult GetTest(int id)
         {
-            _repository.Dispose();
-            base.Dispose();
+            var response = new ListModelResponse<PostMeta>() as IListModelResponse<PostMeta>;
+
+
+            response.Model = _repository.GetTest(id).ToList();
+            
+            return response.ToHttpResponse();
         }
 
         [HttpGetAttribute]

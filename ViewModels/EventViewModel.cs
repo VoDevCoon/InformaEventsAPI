@@ -4,7 +4,7 @@ namespace InformaEventsAPI.ViewModels
 {
     public class EventViewModel
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string EventName { get; set; }
         public string ShortDescription { get; set; }
         public string Overview { get; set; }

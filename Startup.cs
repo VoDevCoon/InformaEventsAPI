@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using InformaEventsAPI.Core.DataLayer;
 
 namespace InformaEventsAPI
 {
@@ -25,6 +27,10 @@ namespace InformaEventsAPI
         {
             // Add framework services.
             services.AddMvc();
+            services.AddScoped<IInformaEventsRepository, InformaEventsRepository>();
+
+            var wpConnectionString = Configuration["wpConnectionString"];
+            services.AddDbContext<InformaWordPressDbContext>(options=>options.UseMySql(wpConnectionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
