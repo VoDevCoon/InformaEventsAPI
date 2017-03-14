@@ -8,6 +8,7 @@ using System.Linq;
 using InformaEventsAPI.Extensions;
 using Microsoft.EntityFrameworkCore;
 using InformaEventsAPI.Core.EntityLayer;
+using System.Collections.Generic;
 
 namespace InformaEventsAPI.Controllers
 {
@@ -40,19 +41,20 @@ namespace InformaEventsAPI.Controllers
 
         [HttpGetAttribute]
         [RouteAttribute("Events")]
-        public async Task<IActionResult> GetEvents(int? pageSize=10, int? pageNumber=1, string searchTerm = null)
+        public async Task<IActionResult> GetEvents(int? pageSize=10, int? pageNumber=1, string category = null, string searchTerm = null)
         {
-            var response = new ListModelResponse<EventViewModel>() as IListModelResponse<EventViewModel>;
+            var response = new ListModelResponse<EventViewModelOverview>() as IListModelResponse<EventViewModelOverview>;
 
             try
             {
                 response.PageSize = (int)pageSize;
                 response.PageNumber = (int)pageNumber;
+                var eventViewModels = new List<EventViewModel>();
 
                 response.Model = await _repository
-                                    .GetEvents(response.PageSize, response.PageNumber, searchTerm)
-                                    .Select(item=>item.ToViewModel())
-                                    .ToListAsync();
+                                .GetPosts(response.PageSize, response.PageNumber, category, searchTerm)
+                                .Select(p=>p.ToViewModelEventOverview())
+                                .ToListAsync();
 
                 response.Message = String.Format("Total of records: {0}", response.Model.Count());
             }
