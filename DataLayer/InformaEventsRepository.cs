@@ -43,14 +43,12 @@ namespace InformaEventsAPI.Core.DataLayer
             if(!String.IsNullOrEmpty(category))
             {
                 query = query.Include(p=>p.PostMetas)
-                            .Where(p=>p.PostMetas.Contains(pm.Equals("event_type")&&pm.MetaValue.Equals(category)));
+                            .Where(p=>p.PostMetas.Any(pm=>pm.PostId==p.Id&&pm.Equals("event_type")&&pm.MetaValue.Equals(category)));
             }
 
-             var posts = 
+            var ael = query.ToList();
 
-
-
-            return posts;
+            return query;
 
         }
 
