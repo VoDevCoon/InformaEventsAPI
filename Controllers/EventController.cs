@@ -41,9 +41,9 @@ namespace InformaEventsAPI.Controllers
 
         [HttpGetAttribute]
         [RouteAttribute("Events")]
-        public async Task<IActionResult> GetEvents(int? pageSize=10, int? pageNumber=1, string category = null, string searchTerm = null)
+        public async Task<IActionResult> GetEvents(int? pageSize=10, int? pageNumber=1, string eventType = null, string searchTerm = null)
         {
-            var response = new ListModelResponse<EventViewModelOverview>() as IListModelResponse<EventViewModelOverview>;
+            var response = new ListModelResponse<EventViewModelList>() as IListModelResponse<EventViewModelList>;
 
             try
             {
@@ -52,8 +52,8 @@ namespace InformaEventsAPI.Controllers
                 var eventViewModels = new List<EventViewModel>();
 
                 response.Model = await _repository
-                                .GetPosts(response.PageSize, response.PageNumber, category, searchTerm)
-                                .Select(p=>p.ToViewModelEventOverview())
+                                .GetPosts(response.PageSize, response.PageNumber, eventType, searchTerm)
+                                .Select(p=>p.ToEvent().ToViewModelEventList())
                                 .ToListAsync();
 
                 response.Message = String.Format("Total of records: {0}", response.Model.Count());

@@ -30,26 +30,21 @@ namespace InformaEventsAPI.Core.DataLayer
             }
         }
 
-        public IQueryable<Post> GetPosts(int pageSize, int pageNumber, string category, string searchTerm)
+        public IQueryable<Post> GetPosts(int pageSize, int pageNumber, string eventType, string searchTerm)
         {
-            var query= _wpdbcontext.Posts.Where(p=>p.PostType.ToLower().Equals("product")).Skip(pageSize*pageNumber).Take(pageSize);
+            var query= _wpdbcontext.Posts.Where(p=>p.PostType.ToLower().Equals("product")&&p.PostStatus.ToLower().Equals("publish"));
 
             if(!String.IsNullOrEmpty(searchTerm))
             {
                 query = query.Where(p=>p.PostTitle.ToLower().Contains(searchTerm));
             }
 
-
-            if(!String.IsNullOrEmpty(category))
-            {
-                query = query.Include(p=>p.PostMetas)
-                            .Where(p=>p.PostMetas.Any(pm=>pm.PostId==p.Id&&pm.Equals("event_type")&&pm.MetaValue.Equals(category)));
-            }
-
-            var ael = query.ToList();
+            query = query.Include(p=>p.PostMetas)
+                        .Where(p=>p.PostMetas.Any(pm=>pm.PostId==p.Id&&pm.MetaKey.Equals("event_type")&&pm.MetaValue.Equals(eventType)))
+                        .Skip(pageSize*(pageNumber-1))
+                        .Take(pageSize);
 
             return query;
-
         }
 
         public IQueryable<PostMeta> GetTest(int postid)

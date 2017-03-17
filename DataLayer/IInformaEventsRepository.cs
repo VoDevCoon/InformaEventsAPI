@@ -8,7 +8,7 @@ namespace InformaEventsAPI.Core.DataLayer
     public interface IInformaEventsRepository
     {
         void Dispose();
-        IQueryable<Post> GetPosts(int pageSize, int pageNumber, string category, string searchTerm);
+        IQueryable<Post> GetPosts(int pageSize, int pageNumber, string evnetType, string searchTerm);
         IQueryable<PostMeta> GetTest(int id);
         
     }

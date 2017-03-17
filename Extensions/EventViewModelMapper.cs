@@ -1,66 +1,58 @@
 using System;
-using System.Linq;
 using InformaEventsAPI.Core.EntityLayer;
 using InformaEventsAPI.ViewModels;
 namespace InformaEventsAPI.Extensions
 {
     public static class EventViewModelMapper
     {
-        public static EventViewModel ToViewModel(this Event entity)
+        public static EventViewModelList ToViewModelEventList(this Event model)
         {
-            return entity == null ? null : new EventViewModel
+            if(model==null)
             {
-                Id = entity.Id,
-                EventName = entity.Title,
-                ShortDescription = entity.ShortDescription,
-                Overview = entity.LongDescription,
-                StartDate = entity.StartDate,
-                Duration = entity.Duration,
-                City = entity.City,
-                Venue = entity.Venue,
-                MainCategory = entity.MainCategory
-            };
-        }
-        public static EventViewModelOverview ToViewModelEventOverview(this Post entity)
-        {
-            if(entity!=null)
+                return null;
+            }
+            
+            var viewModel = new EventViewModelList();
+
+            viewModel.Id = model.Id;
+            viewModel.EventName = model.Title;
+            viewModel.City = model.City;
+            viewModel.ShortDescription = model.ShortDescription;
+
+            if(model.StartDate!=null)
             {
-                var viewModel = new EventViewModelOverview();
-
-                viewModel.Id = entity.Id;
-                viewModel.EventName = entity.PostTitle;
-                viewModel.ShortDescription = entity.PostMetas
-                                        .Where(pm=>pm.MetaKey.ToLower().Equals("excerpt"))
-                                        .Select(pm=>pm.MetaValue)
-                                        .FirstOrDefault();
-                viewModel.Overview = entity.PostContent;
-
-                var unixTimeStamp = entity.PostMetas
-                                        .Where(pm=>pm.MetaKey.ToLower().Equals("single_start_dates_sting"))
-                                        .Select(pm=>pm.MetaValue)
-                                        .FirstOrDefault();
-                viewModel.StartDate = unixTimeStamp.UnixTimeStampToDateTime();
-                viewModel.Duration = Int32.Parse(entity.PostMetas
-                                        .Where(pm=>pm.MetaKey.ToLower().Equals("duration"))
-                                        .Select(pm=>pm.MetaValue)
-                                        .FirstOrDefault());
-
-                return viewModel;
+                var startDate = (DateTime)model.StartDate;
+                viewModel.Date = string.Format("{0} - {1}", startDate.ToString("dd"), startDate.AddDays(model.Duration).ToString("dd MMM yyyy"));
+            }
+            else{
+                viewModel.Date = string.Empty;
             }
 
-            return null;
+            
+            viewModel.ThumbnailUrl = model.ThumbnailUrl;
+
+            return viewModel;
         }
-
-        public static DateTime UnixTimeStampToDateTime(this string timestamp)
+        public static EventViewModelOverview ToViewModelEventOverview(this Event model)
         {
-            double dTimeStamp;
-
-            if(!string.IsNullOrEmpty(timestamp)&&Double.TryParse(timestamp, out dTimeStamp))
-            {          
-                return new DateTime(1970,1,1,0,0,0,DateTimeKind.Utc).AddSeconds(dTimeStamp).ToLocalTime();
+            if(model==null)
+            {
+                return null;
             }
+            
+            var viewModel = new EventViewModelOverview();
 
-            return default(DateTime);
+            viewModel.Id = model.Id;
+            viewModel.EventName = model.Title;
+            viewModel.City = model.City;
+            viewModel.Venue = model.Venue;
+            viewModel.ShortDescription = model.ShortDescription;
+            viewModel.Overview = model.LongDescription;
+            //viewModel.StartDate = model.StartDate;
+            viewModel.Duration = model.Duration;
+            viewModel.MainCategory = model.MainCategory;
+
+            return viewModel;
         }
     }
 }
