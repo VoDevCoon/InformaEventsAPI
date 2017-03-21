@@ -29,7 +29,7 @@ namespace InformaEventsAPI.Controllers
 
         [HttpGetAttribute]
         [RouteAttribute("Events")]
-        public async Task<IActionResult> GetEvents(int? pageSize=10, int? pageNumber=1, string eventType = null, int? eventCategory=77,string searchTerm = null)
+        public async Task<IActionResult> GetEvents(int? pageSize=10, int? pageNumber=1, string eventType = "product", string eventStatus="publish", int? eventCategory=77,string searchTerm = null)
         {
             var response = new ListModelResponse<EventViewModelList>() as IListModelResponse<EventViewModelList>;
 
@@ -41,7 +41,7 @@ namespace InformaEventsAPI.Controllers
                 var eventViewModels = new List<EventViewModel>();
 
                 response.Model = await _repository
-                                .GetPosts(response.PageSize, response.PageNumber, eventType, category, searchTerm)
+                                .GetPosts(response.PageSize, response.PageNumber, eventType, eventStatus, category, searchTerm)
                                 .Select(p=>p.ToEvent().ToViewModelEventList())
                                 .ToListAsync();
 
@@ -49,9 +49,8 @@ namespace InformaEventsAPI.Controllers
             }
             catch(Exception ex)
             {
-                throw ex;
                 response.DidError = true;
-                response.Message = ex.StackTrace;
+                response.Message = ex.Message;
             }
 
             return response.ToHttpResponse();

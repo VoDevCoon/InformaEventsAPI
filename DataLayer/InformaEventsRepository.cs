@@ -30,40 +30,59 @@ namespace InformaEventsAPI.Core.DataLayer
             }
         }
 
-        public IQueryable<Post> GetPosts(int pageSize, int pageNumber, string eventType, int eventCategory, string searchTerm)
+        public IQueryable<Post> GetPosts(int pageSize,
+                                         int pageNumber,
+                                         string eventType,
+                                         string eventStatus, 
+                                         int eventCategory, 
+                                         string searchTerm)
         {
-            // var query= _wpdbcontext.Posts.Where(p=>p.PostType.ToLower().Equals("product")&&p.PostStatus.ToLower().Equals("publish"));
+            var query= _wpdbcontext.Posts
+                    .Where(p=>p.PostType.ToLower().Equals(eventType)
+                            &&p.PostStatus.ToLower().Equals(eventStatus));
 
-            // if(!String.IsNullOrEmpty(searchTerm))
-            // {
-            //     query = query.Where(p=>p.PostTitle.ToLower().Contains(searchTerm));
-            // }
+            if(!String.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(p=>p.PostTitle.ToLower().Contains(searchTerm));
+            }
 
-            // query = query.Include(p=>p.PostMetas)
-            //             .Where(p=>p.PostMetas.Any(pm=>pm.PostId==p.Id&&pm.MetaKey.Equals("event_type")&&pm.MetaValue.Equals(eventType)))
-            //             .Skip(pageSize*(pageNumber-1))
-            //             .Take(pageSize);
+            query = query.Include(p=>p.EventCategory)
+                         .Where(p=>p.EventCategory.Any(c=>c.TermTaxonomyId==eventCategory))
+                         .Skip(pageSize*(pageNumber-1))
+                         .Take(pageSize);;
 
-            var query2 = from post in _wpdbcontext.Posts
-                        //join termRelationship in _wpdbcontext.TermsRelationships on post.Id equals termRelationship.ObjectId
-                        //where termRelationship.TermTaxonomyId==eventCategory
-                        where post.PostType==eventType && post.PostStatus=="publish"
-                        join postmeta in _wpdbcontext.PostMetas on post.Id equals postmeta.PostId
-                        into metaGroup
-                        join category in _wpdbcontext.TermsRelationships on post.Id equals category.ObjectId
-                        where category.TermTaxonomyId == 77
-                        select(
-                            new Post
-                            {
-                                Id=post.Id,
-                                PostTitle=post.PostTitle,
-                                PostMetas=metaGroup
-                            });
+            query = query.Select(p=>new Post()
+                {
+                    PostMetas = p.PostMetas
+                                 .Where(pm=>pm.MetaKey.Equals("single_address_string")||
+                                            pm.MetaKey.Equals("single_start_dates_sting")||
+                                            pm.MetaKey.Equals("excerpt")||
+                                            pm.MetaKey.Equals("duration")||
+                                            pm.MetaKey.Equals("_thumbnail_id")||
+                                            pm.MetaKey.Equals("event_code")||
+                                            pm.MetaKey.Equals("event_type")),
+                    Id = p.Id,
+                    PostTitle=p.PostTitle,
+                    PostStatus=p.PostStatus,
+                    PostType=p.PostType                    
 
-                            var posts = query2.Skip(pageSize*(pageNumber-1))
-                        .Take(pageSize).ToList();
-            return query2.Skip(pageSize*(pageNumber-1))
-                        .Take(pageSize);
+                });
+
+            // var query2 = query.ToList();
+
+            //             var index=0;
+            //             foreach(var p in query2)
+            //             {
+
+            //                 System.Console.WriteLine($"{index++}:{p.PostTitle}");
+
+            //                 foreach(var pm in p.PostMetas)
+            //                 {
+            //                     System.Console.WriteLine($"\t\t{pm.MetaKey}:{pm.MetaValue}");
+            //                 }
+            //          }
+
+            return query;
         }
     }
 }

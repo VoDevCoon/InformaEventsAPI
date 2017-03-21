@@ -29,5 +29,6 @@ namespace InformaEventsAPI.Core.EntityLayer
         public string PostMimeType { get; set; }
         public int CommentCount { get; set; }
         public IEnumerable<PostMeta> PostMetas { get; set; }
+        public IEnumerable<TermsRelationship> EventCategory { get; set; }
     }
 }

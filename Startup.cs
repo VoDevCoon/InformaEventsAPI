@@ -43,7 +43,13 @@ namespace InformaEventsAPI
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseMvc();
+            app.UseMvc();//routes=>
+            // {
+            //     routes.MapRoute(
+            //         name:"default",
+            //         template:"api/{controller=Event}/{action=Events}"
+            //     );
+            // });
         }
     }
 }
