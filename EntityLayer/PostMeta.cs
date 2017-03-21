@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 namespace InformaEventsAPI.Core.EntityLayer
 {
     public class PostMeta

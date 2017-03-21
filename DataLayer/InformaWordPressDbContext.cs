@@ -12,12 +12,18 @@ namespace InformaEventsAPI.Core.DataLayer
         }
 
         public DbSet<Post> Posts { get; set; }
-        public DbSet<PostMeta> PostMeta { get; set; }
+        public DbSet<PostMeta> PostMetas { get; set; }
+        public DbSet<TermsRelationship> TermsRelationships { get; set; }
+        public DbSet<TermTaxonomy> TermTaxonomies { get; set; }
+        public DbSet<Term> Terms { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.MapPost();
             modelBuilder.MapPostMeta();
+            modelBuilder.MapTerm();
+            modelBuilder.MapTermRelationship();
+            modelBuilder.MapTermTaxonomy();
 
             base.OnModelCreating(modelBuilder);
         }

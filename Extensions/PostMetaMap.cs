@@ -10,10 +10,10 @@ namespace InformaEventsAPI.Extensions
             var entity = modelBuilder.Entity<PostMeta>();
 
             entity.ToTable("in_postmeta");
-            entity.Property(p=>p.Id).HasColumnName("meta_id");
-            entity.Property(p=>p.PostId).HasColumnName("post_id");
-            entity.Property(p=>p.MetaKey).HasColumnName("meta_key");
-            entity.Property(p=>p.MetaValue).HasColumnName("meta_value");
+            entity.Property(c=>c.Id).HasColumnName("meta_id");
+            entity.Property(c=>c.PostId).HasColumnName("post_id");
+            entity.Property(c=>c.MetaKey).HasColumnName("meta_key");
+            entity.Property(c=>c.MetaValue).HasColumnName("meta_value");
 
             return modelBuilder;
         }

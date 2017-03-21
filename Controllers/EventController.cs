@@ -28,20 +28,8 @@ namespace InformaEventsAPI.Controllers
         // }
 
         [HttpGetAttribute]
-        [RouteAttribute("Test/{id}")]
-        public IActionResult GetTest(int id)
-        {
-            var response = new ListModelResponse<PostMeta>() as IListModelResponse<PostMeta>;
-
-
-            response.Model = _repository.GetTest(id).ToList();
-            
-            return response.ToHttpResponse();
-        }
-
-        [HttpGetAttribute]
         [RouteAttribute("Events")]
-        public async Task<IActionResult> GetEvents(int? pageSize=10, int? pageNumber=1, string eventType = null, string searchTerm = null)
+        public async Task<IActionResult> GetEvents(int? pageSize=10, int? pageNumber=1, string eventType = null, int? eventCategory=77,string searchTerm = null)
         {
             var response = new ListModelResponse<EventViewModelList>() as IListModelResponse<EventViewModelList>;
 
@@ -49,10 +37,11 @@ namespace InformaEventsAPI.Controllers
             {
                 response.PageSize = (int)pageSize;
                 response.PageNumber = (int)pageNumber;
+                var category = (int) eventCategory;
                 var eventViewModels = new List<EventViewModel>();
 
                 response.Model = await _repository
-                                .GetPosts(response.PageSize, response.PageNumber, eventType, searchTerm)
+                                .GetPosts(response.PageSize, response.PageNumber, eventType, category, searchTerm)
                                 .Select(p=>p.ToEvent().ToViewModelEventList())
                                 .ToListAsync();
 
@@ -60,8 +49,9 @@ namespace InformaEventsAPI.Controllers
             }
             catch(Exception ex)
             {
+                throw ex;
                 response.DidError = true;
-                response.Message = ex.Message;
+                response.Message = ex.StackTrace;
             }
 
             return response.ToHttpResponse();
