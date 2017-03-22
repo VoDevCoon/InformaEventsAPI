@@ -46,13 +46,13 @@ namespace InformaEventsAPI.Core.DataLayer
                 query = query.Where(p=>p.PostTitle.ToLower().Contains(searchTerm));
             }
 
-            query = query.Include(p=>p.EventCategory)
-                         .Where(p=>p.EventCategory.Any(c=>c.TermTaxonomyId==eventCategory))
+            query = query.Include(p=>p.PostCategoy)
+                         .Where(p=>p.PostCategoy.Any(c=>c.TermTaxonomyId==eventCategory))
                          .Skip(pageSize*(pageNumber-1))
-                         .Take(pageSize);;
+                         .Take(pageSize);
 
-            query = query.Select(p=>new Post()
-                {
+            query = query.Select(p=>new Post
+                {   
                     PostMetas = p.PostMetas
                                  .Where(pm=>pm.MetaKey.Equals("single_address_string")||
                                             pm.MetaKey.Equals("single_start_dates_sting")||
@@ -64,24 +64,31 @@ namespace InformaEventsAPI.Core.DataLayer
                     Id = p.Id,
                     PostTitle=p.PostTitle,
                     PostStatus=p.PostStatus,
-                    PostType=p.PostType                    
-
+                    PostType=p.PostType,
+                    ThumbnailPostId= p.PostMetas.Where(pm=>pm.MetaKey.Equals("_thumbnail_id")).Select(pm=>pm.MetaValue).FirstOrDefault()
                 });
 
-            // var query2 = query.ToList();
+            return query;
+        }
 
-            //             var index=0;
-            //             foreach(var p in query2)
-            //             {
+        public Post GetPost(int postId)
+        {
+            return _wpdbcontext.Posts.Find(postId);
+        }
 
-            //                 System.Console.WriteLine($"{index++}:{p.PostTitle}");
-
-            //                 foreach(var pm in p.PostMetas)
-            //                 {
-            //                     System.Console.WriteLine($"\t\t{pm.MetaKey}:{pm.MetaValue}");
-            //                 }
-            //          }
-
+        public IQueryable<EventCategory> GetPostCategory(int postId)
+        {
+            var query = _wpdbcontext.TermTaxonomies
+                        .Join(_wpdbcontext.TermsRelationships, tt=>tt.TermTaxonomyId, tr=>tr.TermTaxonomyId
+                        , (tt, tr)=>new{ObjectId=tr.ObjectId, TermId=tt.TermId, Taxonomy=tt.Taxonomy, Description=tt.Description, Parent=tt.Parent, Count=tt.Count}
+                        ).Where(c=>c.ObjectId==postId&&c.Taxonomy.Equals("product_cat"))
+                        .Join(_wpdbcontext.Terms, q=>q.TermId, t=>t.TermId, (q,t)=>new EventCategory()
+                        {
+                            WPTermId=t.TermId,
+                            Description=q.Description,
+                            Parent=q.Parent,
+                            CategoryEventCount=q.Count
+                        });
             return query;
         }
     }

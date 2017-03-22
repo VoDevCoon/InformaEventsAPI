@@ -31,6 +31,8 @@ namespace InformaEventsAPI.Extensions
             
             viewModel.ThumbnailUrl = model.ThumbnailUrl;
 
+            viewModel.EventCategory = model.EventCategory;
+
             return viewModel;
         }
         public static EventViewModelOverview ToViewModelEventOverview(this Event model)
@@ -50,7 +52,7 @@ namespace InformaEventsAPI.Extensions
             viewModel.Overview = model.LongDescription;
             //viewModel.StartDate = model.StartDate;
             viewModel.Duration = model.Duration;
-            viewModel.MainCategory = model.MainCategory;
+            //viewModel.MainCategory = model.MainCategory;
 
             return viewModel;
         }

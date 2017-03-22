@@ -1,5 +1,6 @@
 
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace InformaEventsAPI.Core.EntityLayer
 {
@@ -12,5 +13,8 @@ namespace InformaEventsAPI.Core.EntityLayer
         public string Description { get; set; }
         public int Parent { get; set; }
         public int Count { get; set; }
+
+        [ForeignKeyAttribute("TermTaxonomyId")]
+        public TermsRelationship TermsRelationship { get; set; }
     }
 }

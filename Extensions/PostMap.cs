@@ -32,6 +32,8 @@ namespace InformaEventsAPI.Extensions
             entity.Property(c=>c.PostMimeType).HasColumnName("post_mime_type");
             entity.Property(c=>c.CommentCount).HasColumnName("comment_count");
 
+            entity.Ignore(c=>c.ThumbnailPostId);
+
             return modelBuilder;
         }
     }

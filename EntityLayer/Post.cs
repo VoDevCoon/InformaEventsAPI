@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace InformaEventsAPI.Core.EntityLayer
 {
@@ -28,7 +30,9 @@ namespace InformaEventsAPI.Core.EntityLayer
         public string PostType { get; set; }
         public string PostMimeType { get; set; }
         public int CommentCount { get; set; }
+        public string ThumbnailPostId { get; set; }
         public IEnumerable<PostMeta> PostMetas { get; set; }
-        public IEnumerable<TermsRelationship> EventCategory { get; set; }
+        public IEnumerable<TermsRelationship> PostCategoy { get; set; }
+       
     }
 }

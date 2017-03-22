@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using InformaEventsAPI.Core.DataLayer;
 using InformaEventsAPI.Core.EntityLayer;
 using InformaEventsAPI.Extensions;
 
@@ -7,7 +8,7 @@ namespace InformaEventsAPI.Extensions
 {
     public static class EventModelMapper
     {
-        public static Event ToEvent(this Post entity)
+        public static Event ToEvent(this Post entity, IInformaEventsRepository repositoty)
         {
             if(entity!=null)
             {
@@ -25,10 +26,7 @@ namespace InformaEventsAPI.Extensions
                             .Select(pm=>pm.MetaValue)
                             .FirstOrDefault();
 
-                model.MainCategory = entity.PostMetas
-                            .Where(pm=>pm.MetaKey.ToLower().Equals("_yoast_wpseo_primary_product_cat"))
-                            .Select(pm=>pm.MetaValue)
-                            .FirstOrDefault();
+                model.EventCategory = repositoty.GetPostCategory(entity.Id);
 
                 model.City = entity.PostMetas
                             .Where(pm=>pm.MetaKey.ToLower().Equals("single_address_string"))
@@ -60,10 +58,16 @@ namespace InformaEventsAPI.Extensions
                     model.Duration = durationNotSet;
                 }
 
-                model.ThumbnailUrl = entity.PostMetas
-                                        .Where(pm=>pm.MetaKey.ToLower().Equals("_thumbnail_id"))
-                                        .Select(pm=>pm.MetaValue)
-                                        .FirstOrDefault();
+                int postId;
+                var thumbnailPostId = entity.ThumbnailPostId;
+                if(Int32.TryParse(thumbnailPostId, out postId))
+                {
+                    var thumbnailPost = repositoty.GetPost(postId);
+                    model.ThumbnailUrl = thumbnailPost!=null?thumbnailPost.Guid:string.Empty; // TODO: change to use default images
+                }
+                else{
+                    model.ThumbnailUrl = string.Empty; // TODO: change to use default images
+                }
 
                 return model;
             }

@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using InformaEventsAPI.Core.EntityLayer;
 
 namespace InformaEventsAPI.Core.DataLayer
@@ -9,6 +7,7 @@ namespace InformaEventsAPI.Core.DataLayer
     {
         void Dispose();
         IQueryable<Post> GetPosts(int pageSize, int pageNumber, string eventType, string eventStatus, int eventCategory, string searchTerm);
-        
+        Post GetPost(int postId);
+        IQueryable<EventCategory> GetPostCategory(int postId);
     }
 }
