@@ -27,8 +27,7 @@ namespace InformaEventsAPI.Extensions
             else{
                 viewModel.Date = string.Empty;
             }
-
-            
+       
             viewModel.ThumbnailUrl = model.ThumbnailUrl;
 
             viewModel.EventCategory = model.EventCategory;

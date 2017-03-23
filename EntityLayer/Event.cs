@@ -17,5 +17,7 @@ namespace InformaEventsAPI.Core.EntityLayer
         public string City { get; set; }
         public string Venue { get; set; }
         public string ThumbnailUrl { get; set; }
+        public IEnumerable<AgendaDay> AgendaDays { get; set; }
+        public IEnumerable<Spex> Spex { get; set; }
     }
 }

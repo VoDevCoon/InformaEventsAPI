@@ -30,8 +30,8 @@ namespace InformaEventsAPI.Core.DataLayer
             }
         }
 
-        public IQueryable<Post> GetPosts(int pageSize,
-                                         int pageNumber,
+        public IQueryable<Post> GetPosts(//int pageSize,
+                                         //int pageNumber,
                                          string eventType,
                                          string eventStatus, 
                                          int eventCategory, 
@@ -47,9 +47,21 @@ namespace InformaEventsAPI.Core.DataLayer
             }
 
             query = query.Include(p=>p.PostCategoy)
-                         .Where(p=>p.PostCategoy.Any(c=>c.TermTaxonomyId==eventCategory))
-                         .Skip(pageSize*(pageNumber-1))
-                         .Take(pageSize);
+                         .Where(p=>p.PostCategoy.Any(c=>c.TermTaxonomyId==eventCategory));
+                         //.Skip(pageSize*(pageNumber-1))
+                         //.Take(pageSize);
+
+            // var postIds = query.Join(_wpdbcontext.PostMetas, p=>p.Id, pm=>pm.PostId, (p, pm)=>new{p.Id, pm.MetaKey, pm.MetaValue})
+            //             .Where(p=>p.MetaKey.Equals("single_start_dates_sting"))
+            //             .OrderBy(p=>p.MetaValue)
+            //             .Select(p=>p.Id).Distinct()
+            //             .Skip(pageSize*(pageNumber-1))
+            //             .Take(pageSize);
+                        
+
+            // var a = postIds.ToList();
+            // query = query.Join(postIds, p=>p.Id, pid=>pid, (p, pid)=>p);
+
 
             query = query.Select(p=>new Post
                 {   
@@ -85,9 +97,7 @@ namespace InformaEventsAPI.Core.DataLayer
                         .Join(_wpdbcontext.Terms, q=>q.TermId, t=>t.TermId, (q,t)=>new EventCategory()
                         {
                             WPTermId=t.TermId,
-                            Description=q.Description,
-                            Parent=q.Parent,
-                            CategoryEventCount=q.Count
+                            Name=t.Name
                         });
             return query;
         }

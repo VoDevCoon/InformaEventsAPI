@@ -41,10 +41,14 @@ namespace InformaEventsAPI.Controllers
                 var eventViewModels = new List<EventViewModel>();
 
                 var posts = await _repository
-                                .GetPosts(response.PageSize, response.PageNumber, eventType, eventStatus, category, searchTerm)
+                                .GetPosts(eventType, eventStatus, category, searchTerm)
                                 .ToListAsync();
                 response.Model = posts
-                                .Select(p=>p.ToEvent(_repository).ToViewModelEventList());
+                                .Select(p=>p.ToEvent(_repository))
+                                .OrderBy(e=>e.StartDate)
+                                .Select(e=>e.ToViewModelEventList())
+                                .Skip((response.PageNumber-1)*response.PageSize)
+                                .Take(response.PageSize);
 
                 response.Message = String.Format("Total of records: {0}", response.Model.Count());
             }
