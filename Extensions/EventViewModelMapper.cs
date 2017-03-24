@@ -21,11 +21,17 @@ namespace InformaEventsAPI.Extensions
 
             if(model.StartDate!=null)
             {
-                var startDate = (DateTime)model.StartDate;
-                viewModel.Date = string.Format("{0} - {1}", startDate.ToString("dd"), startDate.AddDays(model.Duration).ToString("dd MMM yyyy"));
+                if(DateTime.Compare(model.StartDate, DateTime.Now.AddYears(50))<0){
+                    viewModel.Date = string.Format("{0} - {1}", 
+                                        model.StartDate.ToString("dd"), 
+                                        model.StartDate.AddDays(model.Duration).ToString("dd MMM yyyy"));
+                }
+                else{
+                    viewModel.Date = "Dates yet to be announced";
+                }
             }
             else{
-                viewModel.Date = string.Empty;
+                viewModel.Date = "Dates yet to be announced";
             }
        
             viewModel.ThumbnailUrl = model.ThumbnailUrl;

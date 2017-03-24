@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using InformaEventsAPI.Core.DataLayer;
 using InformaEventsAPI.Core.EntityLayer;
 using System.Threading.Tasks;
+using InformaEventsAPI.Extensions;
 
 namespace InformaEventsAPI.Core.DataLayer
 {
@@ -30,8 +31,8 @@ namespace InformaEventsAPI.Core.DataLayer
             }
         }
 
-        public IQueryable<Post> GetPosts(//int pageSize,
-                                         //int pageNumber,
+        public IQueryable<Post> GetPosts(int pageSize,
+                                         int pageNumber,
                                          string eventType,
                                          string eventStatus, 
                                          int eventCategory, 
@@ -48,24 +49,25 @@ namespace InformaEventsAPI.Core.DataLayer
 
             query = query.Include(p=>p.PostCategoy)
                          .Where(p=>p.PostCategoy.Any(c=>c.TermTaxonomyId==eventCategory));
-                         //.Skip(pageSize*(pageNumber-1))
-                         //.Take(pageSize);
 
-            // var postIds = query.Join(_wpdbcontext.PostMetas, p=>p.Id, pm=>pm.PostId, (p, pm)=>new{p.Id, pm.MetaKey, pm.MetaValue})
-            //             .Where(p=>p.MetaKey.Equals("single_start_dates_sting"))
-            //             .OrderBy(p=>p.MetaValue)
-            //             .Select(p=>p.Id).Distinct()
-            //             .Skip(pageSize*(pageNumber-1))
-            //             .Take(pageSize);
-                        
+            var queryOrderbyHelper = query.Join(_wpdbcontext.PostMetas, 
+                                                p=>p.Id, pm=>pm.PostId, 
+                                                (p, pm)=>new{p.Id, p.PostTitle, pm.MetaKey, pm.MetaValue})
+                                    .Where(p=>p.MetaKey.Equals("single_start_dates_sting"))
+                                    .Select(f1=> new {
+                                        PostId=f1.Id,
+                                        PostTitle=f1.PostTitle,
+                                        StartDate=f1.MetaValue.UnixTimeStampToDateTime()
+                                    })
+                                    .OrderBy(f2=>f2.StartDate).ThenBy(f2=>f2.PostTitle)
+                                    .Skip(pageSize*(pageNumber-1))
+                                    .Take(pageSize);
 
-            // var a = postIds.ToList();
-            // query = query.Join(postIds, p=>p.Id, pid=>pid, (p, pid)=>p);
-
-
-            query = query.Select(p=>new Post
+            query = query.Join(queryOrderbyHelper, p=>p.Id, qoh=>qoh.PostId, (p, qoh)=>new{p,qoh.StartDate})
+                    .OrderBy(f1=>f1.StartDate).ThenBy(f1=>f1.p.PostTitle)
+                    .Select(f2=>new Post
                 {   
-                    PostMetas = p.PostMetas
+                    PostMetas = f2.p.PostMetas
                                  .Where(pm=>pm.MetaKey.Equals("single_address_string")||
                                             pm.MetaKey.Equals("single_start_dates_sting")||
                                             pm.MetaKey.Equals("excerpt")||
@@ -73,11 +75,11 @@ namespace InformaEventsAPI.Core.DataLayer
                                             pm.MetaKey.Equals("_thumbnail_id")||
                                             pm.MetaKey.Equals("event_code")||
                                             pm.MetaKey.Equals("event_type")),
-                    Id = p.Id,
-                    PostTitle=p.PostTitle,
-                    PostStatus=p.PostStatus,
-                    PostType=p.PostType,
-                    ThumbnailPostId= p.PostMetas.Where(pm=>pm.MetaKey.Equals("_thumbnail_id")).Select(pm=>pm.MetaValue).FirstOrDefault()
+                    Id = f2.p.Id,
+                    PostTitle=f2.p.PostTitle,
+                    PostStatus=f2.p.PostStatus,
+                    PostType=f2.p.PostType,
+                    ThumbnailPostId= f2.p.PostMetas.Where(pm=>pm.MetaKey.Equals("_thumbnail_id")).Select(pm=>pm.MetaValue).FirstOrDefault()
                 });
 
             return query;

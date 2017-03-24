@@ -12,7 +12,7 @@ namespace InformaEventsAPI.Core.EntityLayer
         public IEnumerable<EventCategory> EventCategory { get; set; }
         public string ShortDescription { get; set; }
         public string LongDescription { get; set; }
-        public DateTime? StartDate { get; set; }
+        public DateTime StartDate { get; set; }
         public int Duration { get; set; }
         public string City { get; set; }
         public string Venue { get; set; }
