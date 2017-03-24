@@ -40,7 +40,7 @@ namespace InformaEventsAPI.Extensions
 
             return viewModel;
         }
-        public static EventViewModelOverview ToViewModelEventOverview(this Event model)
+        public static EventViewModelOverview ToViewModelEventDetail(this Event model)
         {
             if(model==null)
             {

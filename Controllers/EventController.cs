@@ -45,7 +45,7 @@ namespace InformaEventsAPI.Controllers
                                 .ToListAsync();
 
                 response.Model = posts
-                                .Select(p=>p.ToEvent(_repository).ToViewModelEventList());
+                                .Select(p=>p.ToListEvent(_repository).ToViewModelEventList());
 
                 response.Message = String.Format("Total of records: {0}", response.Model.Count());
             }
@@ -54,6 +54,27 @@ namespace InformaEventsAPI.Controllers
                 response.DidError = true;
                 response.Message = ex.Message;
             } 
+
+            return response.ToHttpResponse();
+        }
+
+        [HttpGetAttribute]
+        [RouteAttribute("{id}")]
+        public Task<IActionResult> GetEvent(int id)
+        {
+            var response = new SingleModelResponse<EventViewModelDetail>() as ISingleModelResponse<EventViewModelDetail>;
+
+            try
+            {  
+                var evt = await _repository.GetEventAsync(new Event{Id = id});
+
+                response.Model = evt.ToViewModelEventDetail();
+            }
+            catch(Exception ex)
+            {
+                response.DidError = true;
+                response.ErrorMessage = ex.Message;
+            }
 
             return response.ToHttpResponse();
         }

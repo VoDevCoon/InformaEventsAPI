@@ -2,7 +2,7 @@ using System;
 
 namespace InformaEventsAPI.ViewModels
 {
-    public class EventViewModelOverview
+    public class EventViewModelDetail
     {
         public int Id { get; set; }
         public string EventName { get; set; }
@@ -10,8 +10,9 @@ namespace InformaEventsAPI.ViewModels
         public string Overview { get; set; }
         public string City { get; set; }
         public string Venue { get; set; }
-        public string StartDate { get; set; }
+        public DateTime StartDate { get; set; }
         public int Duration { get; set; }
         public string MainCategory { get; set; }
+
     }
 }

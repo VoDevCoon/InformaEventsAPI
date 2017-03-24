@@ -8,7 +8,7 @@ namespace InformaEventsAPI.Extensions
 {
     public static class EventModelMapper
     {
-        public static Event ToEvent(this Post entity, IInformaEventsRepository repositoty)
+        public static Event ToListEvent(this Post entity, IInformaEventsRepository repositoty)
         {
             if(entity!=null)
             {
